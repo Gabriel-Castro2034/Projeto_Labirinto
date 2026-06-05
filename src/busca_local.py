@@ -195,7 +195,99 @@ def simulated_annealing(mapa: dict, max_iter: int = 1000, t_inicial: float = 100
     t2 = time.perf_counter()
     return ResultadoBuscaLocal('Simulated Annealing', melhor_ordem_global, melhor_custo_global, t2-t1, iteracoes_usadas, curva, caminho_atual, explorados_atual)
 
-#def genetico(mapa: dict, max_geracoes: int = 100, tam_populacao: int = 10, prob_mutacao: float = 0.1) -> ResultadoBuscaLocal:
-#    t1 = time.perf_counter()
-#    inicio_coord = mapa["inicio"]
-#    objetivo_coord = mapa["objetivo"]
+def mutacao(rota: List[Coordenada], taxa_mutacao: float = 0.1) -> List[Coordenada]:
+    """Sorteia um número. Se cair na taxa de mutação, troca dois genes (pontos) de lugar."""
+    if random.random() < taxa_mutacao:
+        i, j = random.sample(range(len(rota)), 2)
+        rota[i], rota[j] = rota[j], rota[i]
+    return rota
+
+def cruzamento_ordem(pai1: List[Coordenada], pai2: List[Coordenada]) -> List[Coordenada]:
+    """Faz o Order Crossover (OX). Garante que o filho tenha todos os pontos sem repetições."""
+    tamanho = len(pai1)
+    # 1. Escolhe dois pontos de corte aleatórios
+    inicio, fim = sorted(random.sample(range(tamanho), 2))
+    
+    # 2. Cria o filho vazio e copia o 'miolo' do pai1
+    filho = [None] * tamanho
+    filho[inicio:fim+1] = pai1[inicio:fim+1]
+    
+    # 3. Preenche o resto com os genes do pai2 (que já não estejam no filho)
+    ponteiro_filho = (fim + 1) % tamanho
+    for gene in pai2:
+        if gene not in filho:
+            filho[ponteiro_filho] = gene
+            ponteiro_filho = (ponteiro_filho + 1) % tamanho
+            
+    return filho
+
+def algoritmo_genetico(mapa: dict, tamanho_populacao: int = 50, max_geracoes: int = 100, taxa_mutacao: float = 0.1) -> ResultadoBuscaLocal:
+    t1 = time.perf_counter()
+    inicio_coord = mapa["inicio"]
+    objetivo_coord = mapa["objetivo"]
+    ordem_inicial = mapa["coletas"]
+
+    # 1. Gênesis: Criar a População Inicial (Várias rotas aleatórias)
+    populacao = []
+    for _ in range(tamanho_populacao):
+        individuo = ordem_inicial[:]
+        random.shuffle(individuo)
+        populacao.append(individuo)
+
+    melhor_ordem_global = None
+    melhor_custo_global = math.inf
+    curva = []
+    iteracoes_usadas = 0
+
+    # 2. O Ciclo da Evolução (Gerações)
+    for geracao in range(max_geracoes):
+        iteracoes_usadas += 1
+
+        # Avalia a aptidão de todos (Calcula o custo de cada rota)
+        custos_populacao = []
+        for individuo in populacao:
+            custo = calcula_custo(individuo, inicio_coord, objetivo_coord, mapa)
+            custos_populacao.append((custo, individuo))
+
+        # Ordena do melhor (menor custo) para o pior
+        custos_populacao.sort(key=lambda x: x[0])
+
+        # Atualiza o recorde histórico
+        melhor_custo_atual, melhor_individuo_atual = custos_populacao[0]
+        if melhor_custo_atual < melhor_custo_global:
+            melhor_custo_global = melhor_custo_atual
+            melhor_ordem_global = melhor_individuo_atual
+
+        curva.append(melhor_custo_global)
+
+        # 3. Seleção e Reprodução
+        # Elitismo: Os 2 melhores pais sobrevivem intactos para a próxima geração
+        nova_populacao = [custos_populacao[0][1], custos_populacao[1][1]]
+
+        # Preenche o resto da população cruzando os melhores
+        while len(nova_populacao) < tamanho_populacao:
+            # Torneio Simples: Pega 3 pessoas aleatórias e o melhor vira pai
+            competidores_pai1 = random.sample(custos_populacao, 3)
+            pai1 = min(competidores_pai1, key=lambda x: x[0])[1]
+
+            competidores_pai2 = random.sample(custos_populacao, 3)
+            pai2 = min(competidores_pai2, key=lambda x: x[0])[1]
+
+            # Reprodução e Mutação
+            filho = cruzamento_ordem(pai1, pai2)
+            filho = mutacao(filho, taxa_mutacao)
+
+            nova_populacao.append(filho)
+
+        # A nova geração substitui a antiga
+        populacao = nova_populacao
+
+    t2 = time.perf_counter()
+    return ResultadoBuscaLocal(
+        algoritmo=f'Algoritmo Genético (Pop={tamanho_populacao}, Ger={max_geracoes})',
+        caminho=melhor_ordem_global,
+        custo=melhor_custo_global,
+        tempo=t2 - t1,
+        iteracoes=iteracoes_usadas,
+        curva_convergencia=curva
+    )

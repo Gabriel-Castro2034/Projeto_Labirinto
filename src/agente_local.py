@@ -1,5 +1,6 @@
-from typing import Tuple, List
+from typing import Tuple
 from dataclasses import dataclass
+import matplotlib.pyplot as plt
 
 from src.busca_local import (
     simple_hill_climbing,
@@ -91,4 +92,15 @@ class AgenteLocal:
         print(f"Tempo médio: {resultado_busca.tempo_medio:.4f} segundos")
         print(f"Média de iterações: {resultado_busca.iteracoes_medias}")
         print(f"Taxa de sucesso: {resultado_busca.taxa_sucesso:.2f}%")
-        #mostrar curva de convergencia do melhor resultado
+        
+        y = resultado_busca.curva_convergencia
+        x = range(1, len(y)+1)
+        plt.figure(figsize=(10, 6))
+        plt.title(f'Curva de Convergência do Melhor Resultado - {resultado_busca.algoritmo}', fontsize=16, fontweight='bold')
+        plt.plot(x, y, color='red', label='Melhor custo atual')
+        plt.xlabel('Iterações', fontsize=12)
+        plt.ylabel('Custo da Solução', fontsize=12)
+        plt.grid(True, linestyle='--', alpha=0.7)
+        plt.tight_layout()
+        plt.show()
+

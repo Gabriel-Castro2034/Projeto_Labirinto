@@ -116,6 +116,7 @@ def animar_busca_online(mapa: dict, resultado_online: ResultadoBuscaOnline, fps:
             buffer_tela.append(f"Posição do Agente: {estado_agente}\n\n")
 
             for i in range(mapa["altura"]):
+                linha_atual = []
                 for j in range(mapa["largura"]):
                     estado = (i, j)
                     
@@ -136,13 +137,13 @@ def animar_busca_online(mapa: dict, resultado_online: ResultadoBuscaOnline, fps:
                         elif estado in explorados_no_momento:
                             print('.', end='')
                         else:
-                            print(' ', end='')
-                            
-                    # 3. Névoa de Guerra (O que ele não conhece)
+                            print(' ', end='')                            
                     else:
                         print('?', end='')
-                print() # Quebra de linha da matriz
+                buffer_tela.append("".join(linha_atual) + "\n")
                 
+            sys.stdout.write("".join(buffer_tela))
+            sys.stdout.flush()
             time.sleep(delay)
 
         print("\nFim da simulação online!")
