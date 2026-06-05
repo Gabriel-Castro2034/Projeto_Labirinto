@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 from src.busca_local import (
     simple_hill_climbing,
     random_restart,
-    simulated_annealing
+    simulated_annealing,
+    algoritmo_genetico
 )
 import random
 from dataclasses import dataclass
@@ -43,6 +44,8 @@ class AgenteLocal:
                 resultado = random_restart(mapa_temp)
             elif algoritmo == '3':
                 resultado = simulated_annealing(mapa_temp)
+            elif algoritmo == '4':
+                resultado = algoritmo_genetico(mapa_temp)
             else:
                 raise ValueError(f"Opção de algoritmo '{algoritmo}' é inválida.")
             resultados.append(resultado)
@@ -75,13 +78,18 @@ class AgenteLocal:
         )
             
     def calcular_desempenho(self, resultado_busca: EstatisticasLocal) -> float:
-        p_tempo = resultado_busca.tempo_medio * 10
-        p_iteracoes = resultado_busca.iteracoes_medias * 0.01
-        P_erros = p_tempo + p_iteracoes
-        denominador = resultado_busca.custo_medio + P_erros
+        if resultado_busca.taxa_sucesso == 0:
+            return 0.0
+        melhor_custo = resultado_busca.melhor_custo
+        tempo = resultado_busca.tempo_medio * 1000
+        iteracoes = resultado_busca.iteracoes_medias * 0.1
+        custo = resultado_busca.custo_medio
+        denominador = tempo + iteracoes + custo
         if denominador == 0:
             return 100.0
-        return 10000/denominador
+        desempenho_base = 100* (melhor_custo/denominador)
+        desempenho_geral = desempenho_base * (resultado_busca.taxa_sucesso/100)
+        return desempenho_geral
         
     
     def print_resultado(self, resultado_busca):

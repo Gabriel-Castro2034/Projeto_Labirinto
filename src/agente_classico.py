@@ -35,10 +35,12 @@ class AgenteClassico:
         
         r_otimo = busca_weighted_astar(mapa, peso=1.0)
         c_otimo = r_otimo.custo
-        p_nos_exp = resultado_busca.nos_expandidos * 0.1
-        p_tempo = resultado_busca.tempo * 100 
-        P_erros = p_nos_exp + p_tempo
-        denominador = resultado_busca.custo + P_erros
+
+        custo = resultado_busca.custo
+        nos_expandidos = resultado_busca.nos_expandidos * 0.1
+        tempo = resultado_busca.tempo * 1000
+        nos_revisitados = resultado_busca.nos_revisitados * 0.5
+        denominador = custo + nos_expandidos + tempo + nos_revisitados
         if denominador == 0:
             return 100.0
         return 100*(c_otimo/denominador)

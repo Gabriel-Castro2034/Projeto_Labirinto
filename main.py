@@ -13,7 +13,7 @@ def main():
     if mapa == "1":
         caminho_mapa = "data/coleta.txt"
     elif mapa == "2":
-        caminho_mapa = "data/lab2.txt"
+        caminho_mapa = "data/site_diferente.txt"
     elif mapa == "3":
         caminho_mapa  = "data/hard.txt"
     else:
@@ -24,7 +24,7 @@ def main():
     modo = input("Qual modo executar? (1: Clássico, 2: Coletas, 3: Online): ")    
 
     if modo == "1":
-        
+        imprimir_labirinto(mapa)
         agente = AgenteClassico()
         
         print('1 - Busca em Largura (BFS)')
@@ -67,7 +67,7 @@ def main():
         agente.comparar_algoritmos(resultados_df,desempenhos)
     
     elif modo == "2":
-        #imprimir_labirinto(mapa)
+        imprimir_labirinto(mapa)
         agente = AgenteLocal()
 
         print('1 - Hill Climbing')
@@ -90,6 +90,14 @@ def main():
         agente.print_resultado(sa)
         sa_desempenho = agente.calcular_desempenho(sa)
         print(f"Desempenho: {sa_desempenho:.2f}")
+
+        print('\n4 - Genético')
+        ag = agente.execucao_multipla(mapa, algoritmo="4")
+        imprimir_labirinto(mapa, None, ag)
+        agente.print_resultado(ag)
+        ag_desempenho = agente.calcular_desempenho(ag)
+        print(f"Desempenho: {ag_desempenho:.2f}")
+        
 
     elif modo == "3":
         agente = AgenteOnline()

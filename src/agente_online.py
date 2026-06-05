@@ -13,17 +13,20 @@ class AgenteOnline:
         comp = resultado_online.custo_percorrido / resultado_offline.custo
         print(f"Comparação com offline: {comp:.2f} vezes o custo do offline (Busca A*)")
 
-    def calcular_desempenho(self, resultado: ResultadoBuscaOnline):
+    def calcular_desempenho(self, mapa: dict, resultado: ResultadoBuscaOnline):
         if not resultado.encontrado:
             return 0.0
-        p_movimentos = resultado.n_movimentos * 0.01
-        p_custo = resultado.custo_percorrido * 0.01
-        p_tempo = resultado.tempo * 10
-        p_revisita = resultado.n_celulas_revisitadas * 0.02
-        denominador = p_movimentos + p_custo + p_tempo + p_revisita
+        r_otimo = busca_weighted_astar(mapa)
+        c_otimo = r_otimo.custo
+
+        movimentos = resultado.n_movimentos * 0.1
+        custo = resultado.custo_percorrido
+        tempo = resultado.tempo * 1000
+        revisita = resultado.n_celulas_revisitadas * 0.5
+        denominador = movimentos + custo + tempo + revisita
         if denominador == 0:
             return 100.0
-        return 10000 / denominador
+        return 100 * (c_otimo / denominador)
 
     def printResultado(self, resultado: ResultadoBuscaOnline):
         print(f"Encontrado: {resultado.encontrado}")
