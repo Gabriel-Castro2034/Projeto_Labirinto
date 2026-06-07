@@ -21,7 +21,10 @@ class ResultadoBuscaLocal:
 
 
 def gerar_vizinhos(ordem_coleta: List[Coordenada]) -> List[List[Coordenada]]:
-    """Gera a vizinhança trocando de posição dois pontos de coleta."""
+    '''
+    Retorna todas as combinações possíveis obtidas ao trocar a posição de dois 
+    pontos de coleta na permutação atual.
+    '''
     vizinhos = []
     n = len(ordem_coleta)
     for i in range(n):
@@ -32,7 +35,10 @@ def gerar_vizinhos(ordem_coleta: List[Coordenada]) -> List[List[Coordenada]]:
     return vizinhos
 
 def calcula_custo(ordem_coleta: List[Coordenada], inicio: Coordenada, objetivo: Coordenada, mapa: dict) -> float:
-    """Calcula o custo total do caminho passando por todos os pontos de coleta."""
+    '''
+    Utiliza o algoritmo A* Clássico de forma subjacente para calcular a distância
+    entre a origem, a sequência de pontos de coleta e o destino final no labirinto.
+    '''
     custo_total = 0.0
     ponto_atual = inicio
     caminho = []
@@ -60,6 +66,13 @@ def calcula_custo(ordem_coleta: List[Coordenada], inicio: Coordenada, objetivo: 
 
 
 def simple_hill_climbing(mapa:dict, max_iter: int = 1000) -> ResultadoBuscaLocal:
+    '''
+    Itera sobre o espaço de permutações avaliando todos os vizinhos gerados por
+    troca de dois pontos de coleta.
+    A cada passo, adota o vizinho que apresenta a maior redução no custo total.
+    A execução é interrompida ao atingir um mínimo local, ou 
+    seja, quando nenhum vizinho é estritamente melhor que o estado atual.
+    '''
     t1 = time.perf_counter()
     inicio_coord = mapa["inicio"]
     objetivo_coord = mapa["objetivo"]
@@ -154,6 +167,12 @@ def random_restart(mapa: dict, k: int = 5, max_iter: int = 1000) -> ResultadoBus
 
 
 def simulated_annealing(mapa: dict, max_iter: int = 1000, t_inicial: float = 100.0, resfriamento: float = 0.95) -> ResultadoBuscaLocal:
+    '''
+    O algoritmo escapa de mínimos locais ao permitir transições para rotas piores.
+    A probabilidade de aceitar um passo ruim é calculada pela função de Boltzmann (e^(-delta/T))
+    e diminui ao longo do tempo de acordo com a temperatura e a taxa de resfriamento.
+    Avalia apenas um vizinho aleatório por iteração.
+    '''
     t1 = time.perf_counter()
     inicio_coord = mapa["inicio"]
     objetivo_coord = mapa["objetivo"]
