@@ -65,6 +65,10 @@ def reconstruir(no: No):
     return estados, acoes
 
 def busca_largura(mapa: dict) -> ResultadoBusca:
+    '''
+    Executa o algoritmo de Busca em Largura (BFS - Breadth-First Search) no labirinto(mapa).
+    Pega o nó observa se ele é objetivo, caso não seja expande ele e enfileira seus vizinhos, repete.
+    '''
     t1 = time.perf_counter()
     inicio_coord = mapa["inicio"]
     objetivo_coord = mapa["objetivo"]
@@ -109,6 +113,13 @@ def busca_largura(mapa: dict) -> ResultadoBusca:
     return ResultadoBusca('BFS', False, [], [], nos_explorados, nos_expandidos, ordem_explorados, t2-t1, no.g, max_fronteira, nos_revisitados)
 
 def busca_profundidade(mapa: dict) -> ResultadoBusca:
+    '''
+    Executa o algoritmo de Busca em Profundidade (DFS - Depth-First Search) no labirinto(mapa).
+    Explora o mapa por pilha, retira o nó vê os vizinhos e os adiciona no topo da pilha
+    até chegar ao objetivo ou não ter mais opções. Logo, ele volta até onde pode continuar esse
+    ciclo.
+    '''
+    
     t1 = time.perf_counter()
     inicio = No(mapa["inicio"])
     fronteira = [inicio]
@@ -149,6 +160,9 @@ def busca_profundidade(mapa: dict) -> ResultadoBusca:
     return ResultadoBusca('DFS', False, [], [], nos_explorados, nos_expandidos, ordem_explorados, t2-t1, no.g, max_fronteira, nos_revisitados)
 
 def busca_prioridade(nome: str, mapa: dict, funcao_prioridade) -> ResultadoBusca:
+    '''
+    ?
+    '''
     t1 = time.perf_counter()
     inicio_coord = mapa["inicio"]
     objetivo_coord = mapa["objetivo"]
@@ -205,6 +219,10 @@ def busca_prioridade(nome: str, mapa: dict, funcao_prioridade) -> ResultadoBusca
     return ResultadoBusca(nome, False, [], [], nos_explorados, nos_expandidos, ordem_explorados, t2-t1, no.g, max_fronteira, nos_revisitados)
 
 def busca_custo_uniforme(mapa: dict) -> ResultadoBusca:
+    '''
+    Executa o algoritmo de Busca de Custo Uniforme (UCS).
+    Avalia exclusivamente o custo acumulado g(n).
+    '''
     return busca_prioridade(
         'UCS',
         mapa,
@@ -212,13 +230,23 @@ def busca_custo_uniforme(mapa: dict) -> ResultadoBusca:
     )
 
 def busca_gulosa(mapa: dict) -> ResultadoBusca:
-        return busca_prioridade(
-            'Greedy BFS',
-            mapa,
-            lambda no, objetivo: h(no.estado, objetivo)
-        )
+    '''
+    Executa a Busca Gulosa (Greedy Best-First Search).
+    Avalia os vizinhos usando apenas a função heurística h(n), ignorando o custo 
+    já percorrido.
+    '''    
+    return busca_prioridade(
+        'Greedy BFS',
+        mapa,
+        lambda no, objetivo: h(no.estado, objetivo)
+    )
 
 def busca_weighted_astar(mapa: dict, peso: float = 1.0) -> ResultadoBusca:
+    '''
+    Executa a Busca A* Clássica ou Ponderada (Weighted A*).
+    Avalia a fronteira somando o custo real percorrido e a estimativa heurística 
+    multiplicada por um peso: f(n) = g(n) + w * h(n).
+    '''
     if peso <= 0:
         raise ValueError('O peso deve ser positivo.')
     return busca_prioridade(
