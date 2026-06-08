@@ -40,5 +40,3 @@ Siga as instruções na tela para:
 ## 👤 Autor
 
 * **Gabriel Henrique Fonseca Castro**
-
-```
