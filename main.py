@@ -10,13 +10,15 @@ import pandas as pd
 
 def main():
     print("=== Simulador de Agente Inteligente ===")
-    mapa = input("Qual mapa você deseja usar? (1: coleta.txt, 2: lab2.txt, 3: hard.txt): ")
+    mapa = input("Qual mapa você deseja usar? (1: Fácil, 2: Gigante, 3: Múltiplas saídas, 4: Coleta fácil): ")
     if mapa == "1":
-        caminho_mapa = "data/coleta.txt"
+        caminho_mapa = "data/easy.txt"
     elif mapa == "2":
-        caminho_mapa = "data/site_diferente.txt"
+        caminho_mapa = "data/big.txt"
     elif mapa == "3":
-        caminho_mapa  = "data/hard.txt"
+        caminho_mapa  = "data/multiple.txt"
+    elif mapa == "4":
+        caminho_mapa = "data/coleta.txt"
     else:
         raise ValueError("Mapa inválido. Escolha 1, 2 ou 3.")
     
@@ -66,6 +68,19 @@ def main():
         resultados_df = [rbfs,rdfs,rucs,rgreedy,rastar]
         desempenhos = [bfs_desempenho, dfs_desempenho, ucs_desempenho, greedy_desempenho, rastar_desempenho]
         agente.comparar_algoritmos(resultados_df,desempenhos)
+        dados = []
+        for r in resultados_df:
+            dados.append({
+                'Algoritmo': r.algoritmo,
+                'Sucesso': r.encontrado,
+                'Custo': r.custo,
+                'Passos': len(r.caminho),
+                'Expandidos': r.nos_expandidos,
+                'Tempo': r.tempo,
+                'Fronteira': r.max_fronteira
+            })
+        df = pd.DataFrame(dados)
+        df.to_csv("CSV_Classico.csv", sep=';', decimal=',', index=False, encoding='utf-8-sig')
         
     
     elif modo == "2":
@@ -116,7 +131,7 @@ def main():
     elif modo == "3":
         agente = AgenteOnline()
         res = agente.resolver(mapa)
-        print("Aperte Enter para animar a busca online...")
+        print("Aperte Enter para animar a busca online...\n(A animação pode flickar muito ou não funcionar a depender do tamanho do labirinto)")
         input()
         animar_busca_online(mapa, res,60)
         agente.calcular_desempenho(mapa, res)

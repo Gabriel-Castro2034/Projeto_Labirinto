@@ -92,6 +92,5 @@ class AgenteClassico:
                 for container in eixo.containers:
                     eixo.bar_label(container, padding=3, fmt='%.3f')
         
-        resultados_df.to_csv("CSV_classico.csv", sep=';', decimal=',', index=False, encoding='utf-8-sig')
         plt.tight_layout()
         plt.show()

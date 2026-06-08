@@ -1,6 +1,4 @@
-import os
 import sys
-
 from src.busca_classica import ResultadoBusca
 from src.agente_local import EstatisticasLocal
 from src.busca_online import ResultadoBuscaOnline
@@ -99,19 +97,16 @@ def animar_busca_online(mapa: dict, resultado_online: ResultadoBuscaOnline, fps:
 
     delay = 1.0 / fps
 
-    # 1. Limpamos a tela de verdade APENAS UMA VEZ antes da animação começar
     print("\033[H\033[J", end='')
-    # 2. Oculta o cursor piscando do terminal (Deixa a animação mais limpa)
     sys.stdout.write('\033[?25l')
     sys.stdout.flush()
+    
     try:
-            
         for passo, (estado_agente, vistos_no_momento, explorados_no_momento) in enumerate(resultado_online.historico):
             sys.stdout.write("\033[H")
 
             buffer_tela = []
             
-
             buffer_tela.append(f"--- Busca Online: Passo {passo + 1} ---\n")
             buffer_tela.append(f"Posição do Agente: {estado_agente}\n\n")
 
@@ -120,33 +115,32 @@ def animar_busca_online(mapa: dict, resultado_online: ResultadoBuscaOnline, fps:
                 for j in range(mapa["largura"]):
                     estado = (i, j)
                     
-                    # 1. Desenha o Agente
                     if estado == estado_agente:
-                        print('@', end='')
+                        linha_atual.append('@')
                         
-                    # 2. Desenha o que o Agente já descobriu
                     elif estado in vistos_no_momento:
                         if mapa["paredes"][i][j]:
-                            print('█', end='')
+                            linha_atual.append('█')
                         elif estado == mapa["inicio"]:
-                            print('A', end='')
+                            linha_atual.append('A')
                         elif estado == mapa["objetivo"]:
-                            print('B', end='')
+                            linha_atual.append('B')
                         elif estado in mapa["coletas"]:
-                            print('C', end='')
+                            linha_atual.append('C')
                         elif estado in explorados_no_momento:
-                            print('.', end='')
+                            linha_atual.append('.')
                         else:
-                            print(' ', end='')                            
+                            linha_atual.append(' ')                            
                     else:
-                        print('?', end='')
+                        linha_atual.append('?')
+                        
                 buffer_tela.append("".join(linha_atual) + "\n")
                 
             sys.stdout.write("".join(buffer_tela))
             sys.stdout.flush()
             time.sleep(delay)
 
-        print("\nFim da simulação online!")
+        print("\nFim da animação.")
     finally:
         sys.stdout.write('\033[?25h')
         sys.stdout.flush()
