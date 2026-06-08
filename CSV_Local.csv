@@ -1,0 +1,4 @@
+﻿Algoritmo;Melhor Custo;Pior Custo;Custo Médio;Tempo Médio (s);Iterações Médias;Taxa de Sucesso
+Simple Hill Climbing;304,0;432,0;338,1333333333333;0,21282384669563423;3,033333333333333;73,33333333333333
+Random Restart Hill Climbing (k=5);304,0;304,0;304,0;0,7039244700067987;14,4;100,0
+Simulated Annealing;304,0;432,0;310,46666666666664;0,7135508233370881;271,0;93,33333333333333

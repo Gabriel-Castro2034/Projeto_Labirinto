@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 from src.busca_local import (
     simple_hill_climbing,
     random_restart,
-    simulated_annealing,
-    algoritmo_genetico
+    simulated_annealing
 )
 import random
 from dataclasses import dataclass
@@ -44,8 +43,6 @@ class AgenteLocal:
                 resultado = random_restart(mapa_temp)
             elif algoritmo == '3':
                 resultado = simulated_annealing(mapa_temp)
-            elif algoritmo == '4':
-                resultado = algoritmo_genetico(mapa_temp)
             else:
                 raise ValueError(f"Opção de algoritmo '{algoritmo}' é inválida.")
             resultados.append(resultado)

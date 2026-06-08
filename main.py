@@ -6,6 +6,7 @@ from src.map import (
 from src.agente_classico import AgenteClassico
 from src.agente_local import AgenteLocal
 from src.agente_online import AgenteOnline
+import pandas as pd
 
 def main():
     print("=== Simulador de Agente Inteligente ===")
@@ -65,13 +66,16 @@ def main():
         resultados_df = [rbfs,rdfs,rucs,rgreedy,rastar]
         desempenhos = [bfs_desempenho, dfs_desempenho, ucs_desempenho, greedy_desempenho, rastar_desempenho]
         agente.comparar_algoritmos(resultados_df,desempenhos)
+        
     
     elif modo == "2":
         imprimir_labirinto(mapa)
         agente = AgenteLocal()
+        resultados = []
 
         print('1 - Hill Climbing')
         hc = agente.execucao_multipla(mapa, algoritmo="1")
+        resultados.append(hc)
         imprimir_labirinto(mapa, None, hc)
         agente.print_resultado(hc)
         hc_desempenho = agente.calcular_desempenho(hc)
@@ -79,6 +83,7 @@ def main():
 
         print('\n2 - Random Restart')
         rr = agente.execucao_multipla(mapa, algoritmo="2")
+        resultados.append(rr)
         imprimir_labirinto(mapa, None, rr)
         agente.print_resultado(rr)
         rr_desempenho = agente.calcular_desempenho(rr)
@@ -86,17 +91,26 @@ def main():
 
         print('\n3 - Simulated Annealing')
         sa = agente.execucao_multipla(mapa, algoritmo="3")
+        resultados.append(sa)
         imprimir_labirinto(mapa, None, sa)
         agente.print_resultado(sa)
         sa_desempenho = agente.calcular_desempenho(sa)
         print(f"Desempenho: {sa_desempenho:.2f}")
 
-        print('\n4 - Genético')
-        ag = agente.execucao_multipla(mapa, algoritmo="4")
-        imprimir_labirinto(mapa, None, ag)
-        agente.print_resultado(ag)
-        ag_desempenho = agente.calcular_desempenho(ag)
-        print(f"Desempenho: {ag_desempenho:.2f}")
+        dados = []
+        for r in resultados:
+            dados.append({
+                'Algoritmo': r.algoritmo,
+                'Melhor Custo': r.melhor_custo,
+                'Pior Custo': r.pior_custo,
+                'Custo Médio': r.custo_medio,
+                'Tempo Médio (s)': r.tempo_medio,
+                'Iterações Médias': r.iteracoes_medias,
+                'Taxa de Sucesso': r.taxa_sucesso
+            })
+        df = pd.DataFrame(dados)
+        df.to_csv("CSV_Local.csv", sep=';', decimal=',', index=False, encoding='utf-8-sig')
+
         
 
     elif modo == "3":
@@ -105,10 +119,10 @@ def main():
         print("Aperte Enter para animar a busca online...")
         input()
         animar_busca_online(mapa, res,60)
-        agente.calcular_desempenho(res)
+        agente.calcular_desempenho(mapa, res)
         agente.printResultado(res)
         agente.compara_offline(mapa, res)
-        desempenho = agente.calcular_desempenho(res)
+        desempenho = agente.calcular_desempenho(mapa, res)
         print(f"Desempenho: {desempenho:.2f}")
     else:
         raise ValueError("Modo inválido. Escolha 1, 2 ou 3.")

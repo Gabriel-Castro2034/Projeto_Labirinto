@@ -3,6 +3,7 @@ from src.busca_online import (
     busca_profundidade_online
 )
 from src.busca_classica import busca_weighted_astar
+import pandas as pd
 
 class AgenteOnline:
     def resolver(self, mapa: dict):
@@ -35,3 +36,16 @@ class AgenteOnline:
         print(f"Número de movimentos: {resultado.n_movimentos}")
         print(f"Número de células reveladas: {resultado.n_celulas_reveladas}")
         print(f"Número de células revisitadas: {resultado.n_celulas_revisitadas}")
+        dados = [{
+            'encontrado': resultado.encontrado,
+            'tempo': resultado.tempo,
+            'n_movimentos': resultado.n_movimentos,
+            'custo_percorrido': resultado.custo_percorrido,
+            'n_celulas_reveladas': resultado.n_celulas_reveladas,
+            'n_celulas_revisitadas': resultado.n_celulas_revisitadas
+        }]
+        resultados_bo = pd.DataFrame(dados)
+
+        resultados_bo.to_csv("CSV_Online.csv", sep=';', decimal=',', index=False, encoding = 'utf-8-sig')
+
+    
